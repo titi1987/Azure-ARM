@@ -1,0 +1,83 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualMachines_win10_name": {
+            "defaultValue": "win10",
+            "type": "String"
+        },
+        "disks_win10_disk1_6283e46708b44617988cff5623c8ed4a_externalid": {
+            "defaultValue": "/subscriptions/46a13aec-fd6a-48b2-ad56-0edd28376832/resourceGroups/eastus-rg/providers/Microsoft.Compute/disks/win10_disk1_6283e46708b44617988cff5623c8ed4a",
+            "type": "String"
+        },
+        "networkInterfaces_win10223_externalid": {
+            "defaultValue": "/subscriptions/46a13aec-fd6a-48b2-ad56-0edd28376832/resourceGroups/eastus-rg/providers/Microsoft.Network/networkInterfaces/win10223",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2022-03-01",
+            "name": "[parameters('virtualMachines_win10_name')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "Standard_B1s"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "MicrosoftWindowsDesktop",
+                        "offer": "Windows-10",
+                        "sku": "[concat(parameters('virtualMachines_win10_name'), '-21h2-pro-g2')]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "osType": "Windows",
+                        "name": "[concat(parameters('virtualMachines_win10_name'), '_disk1_6283e46708b44617988cff5623c8ed4a')]",
+                        "createOption": "FromImage",
+                        "caching": "ReadWrite",
+                        "managedDisk": {
+                            
+                        },
+                        "deleteOption": "Delete"
+                    },
+                    "dataDisks": []
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachines_win10_name')]",
+                    "adminUsername": "lipot.pickermann",
+                    "windowsConfiguration": {
+                        "provisionVMAgent": true,
+                        "enableAutomaticUpdates": true,
+                        "patchSettings": {
+                            "patchMode": "AutomaticByOS",
+                            "assessmentMode": "ImageDefault",
+                            "enableHotpatching": false
+                        }
+                    },
+                    "secrets": [],
+                    "allowExtensionOperations": true,
+                    "requireGuestProvisionSignal": true
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[parameters('networkInterfaces_win10223_externalid')]",
+                            "properties": {
+                                "deleteOption": "Detach"
+                            }
+                        }
+                    ]
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": true
+                    }
+                },
+                "licenseType": "Windows_Client"
+            }
+        }
+    ]
+}
